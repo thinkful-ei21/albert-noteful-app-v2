@@ -4,22 +4,22 @@ const knex = require('../knex');
 
 
 // GET endpoint api/notes for search with/without searchTerm
-let searchTerm = null;
-knex
-  .select('notes.id', 'title', 'content')
-  .from('notes')
-  .modify(queryBuilder => {
-    if (searchTerm) {
-      queryBuilder.where('title', 'like', `%${searchTerm}%`);
-    }
-  })
-  .orderBy('notes.id')
-  .then(results => {
-    console.log(JSON.stringify(results, null, 2));
-  })
-  .catch(err => {
-    console.error(err);
-  });
+// let searchTerm = null;
+// knex
+//   .select('notes.id', 'title', 'content')
+//   .from('notes')
+//   .modify(queryBuilder => {
+//     if (searchTerm) {
+//       queryBuilder.where('title', 'like', `%${searchTerm}%`);
+//     }
+//   })
+//   .orderBy('notes.id')
+//   .then(results => {
+//     console.log(JSON.stringify(results, null, 2));
+//   })
+//   .catch(err => {
+//     console.error(err);
+//   });
 
 // GET rquest to endpoint api/notes/:id for returning a note by referencing its id
 // let searchId = 1002;

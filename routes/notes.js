@@ -10,7 +10,7 @@ const router = express.Router();
 // const simDB = require('../db/simDB');
 // const notes = simDB.initialize(data);
 
-// actual db from localhost
+// actual psql db from localhost
 const knex = require('../knex');
 
 // Get all (and search by query)
@@ -20,22 +20,17 @@ router.get('/', (req, res, next) => {
   knex.select('id', 'title', 'content')
     .from('notes')
     .modify(function (queryBuilder) {
-      if (searchTerm) {
-        queryBuilder.where('title', 'like', `%${searchTerm}%`);
-      }
+      if(searchTerm) {queryBuilder.where('title', 'like', `%${searchTerm}%`);}
     })
     .orderBy('notes.id')
-    .then(results => {
-      res.json(results);
-    })
-    .catch(err => {
-      next(err);
-    });
+    .then(results => res.json(results))
+    .catch(err => next(err));
 });
 
 // Get/Read a single note
 router.get('/:id', (req, res, next) => {
   const id = req.params.id;
+
   knex
     .select('notes.id', 'title', 'content')
     .from('notes')
@@ -43,15 +38,10 @@ router.get('/:id', (req, res, next) => {
       queryBuilder.where('notes.id', `${id}`);
     })
     .then(([ result ]) => {
-      if(result) {
-        res.json(result);
-      } else {
-        next();
-      }
+      if(result) {res.json(result);}
+      else {next();}
     })
-    .catch(err => {
-      next(err);
-    });
+    .catch(err => next(err));
 });
 
 // Put update an item
@@ -60,13 +50,12 @@ router.put('/:id', (req, res, next) => {
   /***** Never trust users - validate input *****/
   const updateObj = {};
   const updateableFields = ['title', 'content'];
+  
   updateableFields.forEach(field => {
-    if (field in req.body) {
-      updateObj[field] = req.body[field];
-    }
+    if(field in req.body) {updateObj[field] = req.body[field];}
   });
   /***** Never trust users - validate input *****/
-  if (!updateObj.title) {
+  if(!updateObj.title) {
     const err = new Error('Missing `title` in request body');
     err.status = 400;
     return next(err);
@@ -75,22 +64,17 @@ router.put('/:id', (req, res, next) => {
     .where('notes.id', `${id}`)
     .update({title: updateObj.title, content: updateObj.content})
     .returning(['notes.id', 'title', 'content'])
-    .then(([ result ]) => {
-      res.json(result);
-    })
-    .catch(err => {
-      next(err);
-    });
+    .then(([ result ]) => res.json(result))
+    .catch(err => next(err));
 });
 
 
 // Post (insert) an item
 router.post('/', (req, res, next) => {
   const { title, content } = req.body;
-
   const newItem = { title, content };
   /***** Never trust users - validate input *****/
-  if (!newItem.title) {
+  if(!newItem.title) {
     const err = new Error('Missing `title` in request body');
     err.status = 400;
     return next(err);
@@ -102,13 +86,9 @@ router.post('/', (req, res, next) => {
     })
     .returning(['notes.id', 'title', 'content'])
     .then(([ results ]) => {
-      if(results) {
-        res.location(`http://${req.headers.host}/notes/${results.id}`).status(201).json(results);
-      }
+      if(results) {res.location(`http://${req.headers.host}/notes/${results.id}`).status(201).json(results);}
     })
-    .catch(err => {
-      next(err);
-    });
+    .catch(err => next(err));
 });
 
 // Delete an item
@@ -117,12 +97,8 @@ router.delete('/:id', (req, res, next) => {
   knex('notes')
     .where('notes.id', `${id}`)
     .del()
-    .then(() => {
-      res.status(204).end();
-    })
-    .catch(err => {
-      next(err);
-    });
+    .then(() => res.status(204).end())
+    .catch(err => next(err));
 });
 
 module.exports = router;

@@ -3,9 +3,14 @@
 
 
 
--- folders table below
+-- drops all tables first, if any
+-- tables being referenced will be dropped last
+DROP TABLE IF EXISTS notes;
 DROP TABLE IF EXISTS folders;
 
+
+
+-- create folders table, alter start sequence, and populate sample data
 CREATE TABLE folders (
   id serial PRIMARY KEY,
   name text NOT NULL
@@ -21,9 +26,7 @@ INSERT INTO folders (name) VALUES
 
 
 
--- create notes table and populate with sample data
-DROP TABLE IF EXISTS notes;
-
+-- create notes table, alter start sequence, and populate sample data
 CREATE TABLE notes (
   id serial PRIMARY KEY,
   title text NOT NULL,

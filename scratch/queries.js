@@ -21,6 +21,7 @@ const knex = require('../knex');
 //     console.error(err);
 //   });
 
+
 // GET rquest to endpoint api/notes/:id for returning a note by referencing its id
 // let searchId = 1002;
 // knex
@@ -50,6 +51,7 @@ const knex = require('../knex');
 //   .catch(err => {
 //     console.log(err);
 //   });
+
 
 // POST resquest to endpoint api/notes for adding a new note
 // let updateObject = {title: 'some title', content: 'some content'};

@@ -1,4 +1,6 @@
 -- SAMPLE STARTING DATA IMPORTED INTO LOCALHOST DATABASE CALLED noteful-app
+-- to load this file into noteful-app db, run...
+-- psql -U dev -f ~/Desktop/projects/albert-noteful-v2/noteful-app.sql noteful-app
 
 DROP TABLE IF EXISTS notes;
 

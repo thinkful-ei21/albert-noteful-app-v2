@@ -13,7 +13,7 @@ const router = express.Router();
 // actual db from localhost
 const knex = require('../knex');
 
-// Get All (and search by query)
+// Get all (and search by query)
 router.get('/', (req, res, next) => {
   const { searchTerm } = req.query;
 
@@ -32,6 +32,8 @@ router.get('/', (req, res, next) => {
       next(err);
     });
 });
+
+// Get/Read a single note
 router.get('/:id', (req, res, next) => {
   const id = req.params.id;
   knex
@@ -40,8 +42,12 @@ router.get('/:id', (req, res, next) => {
     .modify(queryBuilder => {
       queryBuilder.where('notes.id', `${id}`);
     })
-    .then(([results]) => {
-      res.json(results);
+    .then(([ result ]) => {
+      if(result) {
+        res.json(result);
+      } else {
+        next();
+      }
     })
     .catch(err => {
       next(err);
@@ -69,8 +75,8 @@ router.put('/:id', (req, res, next) => {
     .where('notes.id', `${id}`)
     .update({title: updateObj.title, content: updateObj.content})
     .returning(['notes.id', 'title', 'content'])
-    .then(([results]) => {
-      res.json(results);
+    .then(([ result ]) => {
+      res.json(result);
     })
     .catch(err => {
       next(err);
@@ -95,7 +101,7 @@ router.post('/', (req, res, next) => {
       content: newItem.content
     })
     .returning(['notes.id', 'title', 'content'])
-    .then(([results]) => {
+    .then(([ results ]) => {
       if(results) {
         res.location(`http://${req.headers.host}/notes/${results.id}`).status(201).json(results);
       }
@@ -112,7 +118,7 @@ router.delete('/:id', (req, res, next) => {
     .where('notes.id', `${id}`)
     .del()
     .then(() => {
-      res.sendStatus(204);
+      res.status(204).end();
     })
     .catch(err => {
       next(err);

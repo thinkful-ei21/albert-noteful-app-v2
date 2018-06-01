@@ -52,6 +52,7 @@ router.put('/:id', (req, res, next) => {
   updateableFields.forEach(field => {
     if(field in req.body) {updateObj[field] = req.body[field];}
   });
+
   /***** Never trust users - validate input *****/
   if(!updateObj.title) {
     const err = new Error('Missing `title` in request body');
@@ -90,6 +91,9 @@ router.post('/', (req, res, next) => {
     content: content,
     folder_id: folderId
   };
+
+  if(!newItem.folder_id) {delete newItem.folder_id;}
+
   /***** Never trust users - validate input *****/
   if(!newItem.title) {
     const err = new Error('Missing `title` in request body');

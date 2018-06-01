@@ -49,9 +49,8 @@ router.put('/:id', (req, res, next) => {
   const updateItem = {
     title: title,
     content: content,
-    folder_id: folderId
+    folder_id: (folderId) ? folderId : null
   };
-  if(!updateItem.folder_id) {updateItem.folder_id = null;}
 
   /***** Never trust users - validate input *****/
   if(!updateItem.title) {
@@ -85,9 +84,8 @@ router.post('/', (req, res, next) => {
   const newItem = {
     title: title,
     content: content,
-    folder_id: folderId
+    folder_id: (folderId) ? folderId : null
   };
-  if(!newItem.folder_id) {newItem.folder_id = null;}
 
   /***** Never trust users - validate input *****/
   if(!newItem.title) {

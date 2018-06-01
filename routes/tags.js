@@ -8,33 +8,33 @@ const router = express.Router();
 // Pulls sample psql db from localhost
 const knex = require('../knex');
 
-// Get All Folders (no search filter needed)
+// Get All Tags (no search filter needed)
 router.get('/', (req, res, next) => {
   knex
     .select('id', 'name')
-    .from('folders')
+    .from('tags')
     .then(results => res.json(results))
     .catch(err => next(err));
 });
 
-// Get Folder by ID
+// Get Tags by ID
 router.get('/:id', (req, res, next) => {
-  const folderId = req.params.id;
+  const tagId = req.params.id;
   knex
     .select('id', 'name')
-    .from('folders')
-    .where('id', `${folderId}`)
+    .from('tags')
+    .where('id', `${tagId}`)
     .then(([ result ]) => res.json(result))
     .catch(err => next(err));
 });
 
-// Update Folder (the noteful app does not use this endpoint but we'll create it in order to round out our API)
+// Update Tag (the noteful app does not use this endpoint but we'll create it in order to round out our API)
 router.put('/:id', (req, res, next) => {
-  const folderId = req.params.id;
-  const folderName = req.body.name;
-  knex('folders')
-    .where('id', `${folderId}`)
-    .update('name', `${folderName}`)
+  const tagId = req.params.id;
+  const tagName = req.body.name;
+  knex('tags')
+    .where('id', `${tagId}`)
+    .update('name', `${tagName}`)
     .returning('id', 'name')
     .then(([ result ]) => res.json(result))
     .catch(err => next(err));
@@ -49,10 +49,10 @@ router.post('/', (req, res, next) => {
     err.status = 400;
     return next(err);
   }
-  const newFolder = { name };
+  const newTag = { name };
 
-  knex('folders')
-    .insert(newFolder)
+  knex('tags')
+    .insert(newTag)
     .returning('id', 'name')
     .then(([ result ]) => {
       if(result) {res.location(`http://${req.headers.host}/notes/${result.id}`).status(201).json(result);}
@@ -62,9 +62,9 @@ router.post('/', (req, res, next) => {
 
 // Delete Folder by ID accepts an ID and deletes the folder from the DB and then returns a 204 status
 router.delete('/:id', (req, res, next) => {
-  const folderId = req.params.id;
-  knex('folders')
-    .where('id', `${folderId}`)
+  const tagId = req.params.id;
+  knex('tags')
+    .where('id', `${tagId}`)
     .del()
     .then(() => res.status(204).end())
     .catch(err => next(err));

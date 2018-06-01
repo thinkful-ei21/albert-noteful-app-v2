@@ -38,7 +38,7 @@ router.get('/:id', (req, res, next) => {
     .modify(function(queryBuilder) {
       queryBuilder.where('notes.id', `${id}`);
     })
-    .then(results => res.json(results))
+    .then(([ result ]) => res.json(result))
     .catch(err => next(err));
 });
 
@@ -65,7 +65,8 @@ router.put('/:id', (req, res, next) => {
     .where('id', `${id}`)
     .update({
       title: updateObj.title,
-      content: updateObj.content
+      content: updateObj.content,
+      folder_id: updateObj.folderId
     })
     .returning('id')
     .then(([ id ]) => {
@@ -81,11 +82,14 @@ router.put('/:id', (req, res, next) => {
     .catch(err => next(err));
 });
 
-
 // Post (insert) an item
 router.post('/', (req, res, next) => {
   const { title, content, folderId } = req.body;
-  const newItem = { title, content, folderId };
+  const newItem = {
+    title: title,
+    content: content,
+    folder_id: folderId
+  };
   /***** Never trust users - validate input *****/
   if(!newItem.title) {
     const err = new Error('Missing `title` in request body');
@@ -96,10 +100,7 @@ router.post('/', (req, res, next) => {
   let noteId;
   // Insert new note, instead of returning all the fields, just return the new `id`
   knex('notes')
-    .insert({
-      title: newItem.title,
-      content: newItem.content
-    })
+    .insert(newItem)
     .returning('id')
     .then(([ id ]) => {
       noteId = id;

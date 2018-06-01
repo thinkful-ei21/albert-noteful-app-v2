@@ -45,16 +45,16 @@ router.get('/:id', (req, res, next) => {
 // Put update an item
 router.put('/:id', (req, res, next) => {
   const id = req.params.id;
-  /***** Never trust users - validate input *****/
-  const updateObj = {};
-  const updateableFields = ['title', 'content', 'folderId'];
-  
-  updateableFields.forEach(field => {
-    if(field in req.body) {updateObj[field] = req.body[field];}
-  });
+  const { title, content, folderId } = req.body;
+  const updateItem = {
+    title: title,
+    content: content,
+    folder_id: folderId
+  };
+  if(!updateItem.folder_id) {updateItem.folder_id = null;}
 
   /***** Never trust users - validate input *****/
-  if(!updateObj.title) {
+  if(!updateItem.title) {
     const err = new Error('Missing `title` in request body');
     err.status = 400;
     return next(err);
@@ -64,11 +64,7 @@ router.put('/:id', (req, res, next) => {
   let noteId;
   knex('notes')
     .where('id', `${id}`)
-    .update({
-      title: updateObj.title,
-      content: updateObj.content,
-      folder_id: updateObj.folderId
-    })
+    .update(updateItem)
     .returning('id')
     .then(([ id ]) => {
       noteId = id;
@@ -91,8 +87,7 @@ router.post('/', (req, res, next) => {
     content: content,
     folder_id: folderId
   };
-
-  if(!newItem.folder_id) {delete newItem.folder_id;}
+  if(!newItem.folder_id) {newItem.folder_id = null;}
 
   /***** Never trust users - validate input *****/
   if(!newItem.title) {

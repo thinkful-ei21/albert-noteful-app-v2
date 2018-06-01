@@ -1,7 +1,7 @@
 /* global $ store api moment*/
 'use strict';
 
-const noteful = (function () {
+const noteful = (function() {
 
   function render() {
     const notesList = generateNotesList(store.notes, store.currentNote);
@@ -112,7 +112,7 @@ const noteful = (function () {
    * NOTES EVENT LISTENERS AND HANDLERS
    */
   function handleNoteItemClick() {
-    $('.js-notes-list').on('click', '.js-note-link', event => {
+    $('.js-notes-list').on('click', '.js-note-link', function(event) {
       event.preventDefault();
 
       const noteId = getNoteIdFromElement(event.currentTarget);
@@ -126,7 +126,7 @@ const noteful = (function () {
   }
 
   function handleNoteSearchSubmit() {
-    $('.js-notes-search-form').on('submit', event => {
+    $('.js-notes-search-form').on('submit', function(event) {
       event.preventDefault();
 
       store.currentQuery.searchTerm = $(event.currentTarget).find('input').val();
@@ -141,7 +141,7 @@ const noteful = (function () {
 
 
   function handleNoteFormSubmit() {
-    $('.js-note-edit-form').on('submit', function (event) {
+    $('.js-note-edit-form').on('submit', function(event) {
       event.preventDefault();
 
       const editForm = $(event.currentTarget);
@@ -178,7 +178,7 @@ const noteful = (function () {
   }
 
   function handleNoteStartNewSubmit() {
-    $('.js-start-new-note-form').on('submit', event => {
+    $('.js-start-new-note-form').on('submit', function(event) {
       event.preventDefault();
       store.currentNote = {};
       render();
@@ -186,7 +186,7 @@ const noteful = (function () {
   }
 
   function handleNoteDeleteClick() {
-    $('.js-notes-list').on('click', '.js-note-delete-button', event => {
+    $('.js-notes-list').on('click', '.js-note-delete-button', function(event) {
       event.preventDefault();
       const noteId = getNoteIdFromElement(event.currentTarget);
 
@@ -208,7 +208,7 @@ const noteful = (function () {
    * FOLDERS EVENT LISTENERS AND HANDLERS
    */
   function handleFolderClick() {
-    $('.js-folders-list').on('click', '.js-folder-link', event => {
+    $('.js-folders-list').on('click', '.js-folder-link', function(event) {
       event.preventDefault();
 
       const folderId = getFolderIdFromElement(event.currentTarget);
@@ -217,37 +217,37 @@ const noteful = (function () {
         store.currentNote = {};
       }
 
-      console.info('Get notes by folderId, coming soon...');
-      // api.search('/api/notes', store.currentQuery)
-      //   .then(response => {
-      //     store.notes = response;
-      //     render();
-      //   });
+      // console.info('Get notes by folderId, coming soon...');
+      api.search('/api/notes', store.currentQuery)
+        .then(response => {
+          store.notes = response;
+          render();
+        });
     });
   }
 
   function handleNewFolderSubmit() {
-    $('.js-new-folder-form').on('submit', event => {
+    $('.js-new-folder-form').on('submit', function(event) {
       event.preventDefault();
 
       const newFolderName = $('.js-new-folder-entry').val();
 
-      console.info('Create a folder, coming soon...');
-      // api.create('/api/folders', { name: newFolderName })
-      //   .then(() => {
-      //     $('.js-new-folder-entry').val();
-      //     return api.search('/api/folders');
-      //   }).then(response => {
-      //     store.folders = response;
-      //     render();
-      //   }).catch(err => {
-      //     $('.js-error-message').text(err.responseJSON.message);
-      //   });
+      // console.info('Create a folder, coming soon...');
+      api.create('/api/folders', { name: newFolderName })
+        .then(() => {
+          $('.js-new-folder-entry').val();
+          return api.search('/api/folders');
+        }).then(response => {
+          store.folders = response;
+          render();
+        }).catch(err => {
+          $('.js-error-message').text(err.responseJSON.message);
+        });
     });
   }
 
   function handleFolderDeleteClick() {
-    $('.js-folders-list').on('click', '.js-folder-delete', event => {
+    $('.js-folders-list').on('click', '.js-folder-delete', function(event) {
       event.preventDefault();
       const folderId = getFolderIdFromElement(event.currentTarget);
 
@@ -258,15 +258,15 @@ const noteful = (function () {
         store.currentNote = {};
       }
 
-      console.info('Delete a folder, coming soon...');
-      // api.remove(`/api/folders/${folderId}`)
-      //   .then(() => {
-      //     return api.search('/api/folders');
-      //   })
-      //   .then(response => {
-      //     store.folders = response;
-      //     render();
-      //   });
+      // console.info('Delete a folder, coming soon...');
+      api.remove(`/api/folders/${folderId}`)
+        .then(() => {
+          return api.search('/api/folders');
+        })
+        .then(response => {
+          store.folders = response;
+          render();
+        });
     });
   }
 
@@ -274,7 +274,7 @@ const noteful = (function () {
    * TAGS EVENT LISTENERS AND HANDLERS
    */
   function handleTagClick() {
-    $('.js-tags-list').on('click', '.js-tag-link', event => {
+    $('.js-tags-list').on('click', '.js-tag-link', function(event) {
       event.preventDefault();
 
       const tagId = getTagIdFromElement(event.currentTarget);
@@ -292,7 +292,7 @@ const noteful = (function () {
   }
 
   function handleNewTagSubmit() {
-    $('.js-new-tag-form').on('submit', event => {
+    $('.js-new-tag-form').on('submit', function(event) {
       event.preventDefault();
 
       const newTagName = $('.js-new-tag-entry').val();
@@ -312,7 +312,7 @@ const noteful = (function () {
   }
 
   function handleTagDeleteClick() {
-    $('.js-tags-list').on('click', '.js-tag-delete', event => {
+    $('.js-tags-list').on('click', '.js-tag-delete', function(event) {
       event.preventDefault();
       const tagId = getTagIdFromElement(event.currentTarget);
 

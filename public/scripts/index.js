@@ -1,7 +1,7 @@
 /* global $ noteful api store */
 'use strict';
 
-$(document).ready(function () {
+$(document).ready(function() {
   noteful.bindEventListeners();
 
   api.search('/api/notes')
@@ -10,12 +10,12 @@ $(document).ready(function () {
       noteful.render();
     });
 
-  console.info('Get folders, coming soon...');
-  // api.search('/api/folders')
-  //   .then(response => {
-  //     store.folders = response;
-  //     noteful.render();
-  //   });
+  // console.info('Get folders, coming soon...');
+  api.search('/api/folders')
+    .then(response => {
+      store.folders = response;
+      noteful.render();
+    });
 
   console.info('Get tags, coming soon...');
   // api.search('/api/tags')
@@ -25,4 +25,3 @@ $(document).ready(function () {
   //   });
 
 });
-

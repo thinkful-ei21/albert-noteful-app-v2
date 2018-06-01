@@ -47,7 +47,7 @@ router.put('/:id', (req, res, next) => {
   const id = req.params.id;
   /***** Never trust users - validate input *****/
   const updateObj = {};
-  const updateableFields = ['title', 'content'];
+  const updateableFields = ['title', 'content', 'folderId'];
   
   updateableFields.forEach(field => {
     if(field in req.body) {updateObj[field] = req.body[field];}
@@ -59,13 +59,24 @@ router.put('/:id', (req, res, next) => {
     return next(err);
   }
 
+  // Update existing note, instead of returning all the fields, just return the new `id`
+  let noteId;
   knex('notes')
-    .where('notes.id', `${id}`)
+    .where('id', `${id}`)
     .update({
       title: updateObj.title,
       content: updateObj.content
     })
-    .returning(['notes.id', 'title', 'content'])
+    .returning('id')
+    .then(([ id ]) => {
+      noteId = id;
+      // Using the current id, select the new note and folder
+      return knex
+        .select('notes.id', 'notes.title', 'notes.content', 'folder_id as folderId', 'folders.name as folderName')
+        .from('notes')
+        .leftJoin('folders', 'notes.folder_id', 'folders.id')
+        .where('notes.id', noteId);
+    })
     .then(([ result ]) => res.json(result))
     .catch(err => next(err));
 });
@@ -83,7 +94,6 @@ router.post('/', (req, res, next) => {
   }
 
   let noteId;
-
   // Insert new note, instead of returning all the fields, just return the new `id`
   knex('notes')
     .insert({
@@ -100,9 +110,7 @@ router.post('/', (req, res, next) => {
         .leftJoin('folders', 'notes.folder_id', 'folders.id')
         .where('notes.id', noteId);
     })
-    .then(([result]) => {
-      res.location(`${req.originalUrl}/${result.id}`).status(201).json(result);
-    })
+    .then(([ result ]) => res.location(`${req.originalUrl}/${result.id}`).status(201).json(result))
     .catch(err => next(err));
 });
 
